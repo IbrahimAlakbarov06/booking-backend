@@ -1,0 +1,117 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: flightbooking
+      changes:
+        - createTable:
+            tableName: flight
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: origin
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: destination
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: available_seats
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: datetime
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 2
+      author: flightbooking
+      changes:
+        - createTable:
+            tableName: booking
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: flight_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_booking_flight
+                    references: flight(id)
+              - column:
+                  name: passenger_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: number_of_seats
+                  type: int
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 3
+      author: flightbooking
+      changes:
+        - insert:
+            tableName: flight
+            columns:
+              - column:
+                  name: origin
+                  value: 'New York'
+              - column:
+                  name: destination
+                  value: 'London'
+              - column:
+                  name: available_seats
+                  valueNumeric: 150
+              - column:
+                  name: timestamp
+                  value: '2025-06-01 12:00:00'
+        - insert:
+            tableName: flight
+            columns:
+              - column:
+                  name: origin
+                  value: 'Paris'
+              - column:
+                  name: destination
+                  value: 'Tokyo'
+              - column:
+                  name: available_seats
+                  valueNumeric: 200
+              - column:
+                  name: timestamp
+                  value: '2025-06-02 14:30:00'
+        - insert:
+            tableName: flight
+            columns:
+              - column:
+                  name: origin
+                  value: 'Berlin'
+              - column:
+                  name: destination
+                  value: 'Beijing'
+              - column:
+                  name: available_seats
+                  valueNumeric: 180
+              - column:
+                  name: timestamp
+                  value: '2025-06-03 09:15:00'
