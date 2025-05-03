@@ -18,8 +18,10 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "flight_id", nullable = false)
-    private Flight flightId;
+    private Flight flight;
 
+    @ManyToOne
+    @JoinColumn(name = "passenger_id", nullable = false)
     private Passenger passenger;
 
     @Column(name = "number_of_seats", nullable = false)
