@@ -20,8 +20,7 @@ public class Booking {
     @JoinColumn(name = "flight_id", nullable = false)
     private Flight flightId;
 
-    @Column(name = "passenger_name", nullable = false)
-    private String passengerName;
+    private Passenger passenger;
 
     @Column(name = "number_of_seats", nullable = false)
     private Integer numberOfSeats;

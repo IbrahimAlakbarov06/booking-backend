@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 1
-      author: flightbooking
+      author: IbrahimAlakbarov06
       changes:
         - createTable:
             tableName: flight
@@ -36,7 +36,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 2
-      author: flightbooking
+      author: IbrahimAlakbarov06
       changes:
         - createTable:
             tableName: booking
