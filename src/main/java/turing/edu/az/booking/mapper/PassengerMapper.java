@@ -13,14 +13,14 @@ public interface PassengerMapper extends EntityMapper<PassengerDto, Passenger> {
     PassengerMapper INSTANCE = Mappers.getMapper(PassengerMapper.class);
 
     @Override
-    PassengerDto toEntity(Passenger dto);
+    Passenger toEntity(PassengerDto dto);
 
     @Override
-    List<PassengerDto> toEntity(List<Passenger> dtoList);
+    List<Passenger> toEntity(List<PassengerDto> dtoList);
 
     @Override
-    Passenger toDto(PassengerDto entity);
+    PassengerDto toDto(Passenger entity);
 
     @Override
-    List<Passenger> toDto(List<PassengerDto> entityList);
+    List<PassengerDto> toDto(List<Passenger> entityList);
 }

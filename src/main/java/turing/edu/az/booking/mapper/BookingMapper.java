@@ -15,14 +15,14 @@ public interface BookingMapper extends EntityMapper<BookingDto, Booking> {
     BookingMapper INSTANCE = Mappers.getMapper(BookingMapper.class);
 
     @Override
-    BookingDto toEntity(Booking dto);
+    Booking toEntity(BookingDto dto);
 
     @Override
-    List<BookingDto> toEntity(List<Booking> dtoList);
+    List<Booking> toEntity(List<BookingDto> dtoList);
 
     @Override
-    Booking toDto(BookingDto entity);
+    BookingDto toDto(Booking entity);
 
     @Override
-    List<Booking> toDto(List<BookingDto> entityList);
+    List<BookingDto> toDto(List<Booking> entityList);
 }
