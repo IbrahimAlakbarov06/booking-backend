@@ -46,12 +46,10 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
 
-        // Restore available seats
         Flight flight = booking.getFlight();
         flight.setAvailableSeats(flight.getAvailableSeats() + booking.getNumberOfSeats());
         flightRepository.save(flight);
 
-        // Delete booking
         bookingRepository.deleteById(id);
     }
 

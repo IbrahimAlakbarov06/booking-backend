@@ -21,27 +21,27 @@ public class FlightService {
     private final FlightMapper flightMapper;
 
 
-    public List<FlightDto> getAllFlights() {
+    public List<FlightDto> findAll() {
         List<Flight> flights = flightRepository.findAll();
         return flights.stream()
                 .map(flightMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public FlightDto getFlightById(Long id) {
+    public FlightDto findById(Long id) {
         Flight flight = flightRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found with id: " + id));
         return flightMapper.toDto(flight);
     }
 
-    public void deleteFlightById(Long id) {
+    public void delete(Long id) {
         if (!flightRepository.existsById(id)) {
             throw new ResourceNotFoundException("Flight not found with id: " + id);
         }
         flightRepository.deleteById(id);
     }
 
-    public FlightDto createFlight(FlightRequest flightRequest) {
+    public FlightDto save(FlightRequest flightRequest) {
         Flight flight = new Flight();
         flight.setOrigin(flightRequest.getOrigin());
         flight.setDestination(flightRequest.getDestination());
@@ -52,7 +52,7 @@ public class FlightService {
         return flightMapper.toDto(flight);
     }
 
-    public FlightDto updateFlight(Long id, FlightRequest flightRequest) {
+    public FlightDto update(Long id, FlightRequest flightRequest) {
         Flight flight = flightRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found with id: " + id));
 
