@@ -21,7 +21,4 @@ public class Passenger {
 
     @Column(name = "email")
     private String email;
-
-
-
 }
