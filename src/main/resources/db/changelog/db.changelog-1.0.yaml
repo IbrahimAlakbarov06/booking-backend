@@ -4,7 +4,7 @@ databaseChangeLog:
       author: IbrahimAlakbarov06
       changes:
         - createTable:
-            tableName: flight
+            tableName: flights
             columns:
               - column:
                   name: id
@@ -39,7 +39,32 @@ databaseChangeLog:
       author: IbrahimAlakbarov06
       changes:
         - createTable:
-            tableName: booking
+            tableName: passengers
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: fullname
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 3
+      author: IbrahimAlakbarov06
+      changes:
+        - createTable:
+            tableName: bookings
             columns:
               - column:
                   name: id
@@ -54,12 +79,14 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_booking_flight
-                    references: flight(id)
+                    references: flights(id)
               - column:
-                  name: passenger_name
-                  type: varchar(255)
+                  name: passenger_id
+                  type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: fk_booking_passenger
+                    references: passengers(id)
               - column:
                   name: number_of_seats
                   type: int
@@ -67,11 +94,11 @@ databaseChangeLog:
                     nullable: false
 
   - changeSet:
-      id: 3
+      id: 4
       author: flightbooking
       changes:
         - insert:
-            tableName: flight
+            tableName: flights
             columns:
               - column:
                   name: origin
@@ -86,7 +113,7 @@ databaseChangeLog:
                   name: timestamp
                   value: '2025-06-01 12:00:00'
         - insert:
-            tableName: flight
+            tableName: flights
             columns:
               - column:
                   name: origin
@@ -101,7 +128,7 @@ databaseChangeLog:
                   name: timestamp
                   value: '2025-06-02 14:30:00'
         - insert:
-            tableName: flight
+            tableName: flights
             columns:
               - column:
                   name: origin
@@ -115,3 +142,22 @@ databaseChangeLog:
               - column:
                   name: timestamp
                   value: '2025-06-03 09:15:00'
+
+        - insert:
+            tableName: passengers
+            columns:
+              - column:
+                  name: fullname
+                  value: 'John Doe'
+              - column:
+                  name: email
+                  value: 'john.doe@example.com'
+        - insert:
+            tableName: passengers
+            columns:
+              - column:
+                  name: fullname
+                  value: 'Jane Smith'
+              - column:
+                  name: email
+                  value: 'jane.smith@example.com'
