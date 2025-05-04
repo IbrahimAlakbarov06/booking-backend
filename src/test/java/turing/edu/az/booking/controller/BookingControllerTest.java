@@ -1,24 +1,26 @@
 package turing.edu.az.booking.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import turing.edu.az.booking.domain.entity.Booking;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import turing.edu.az.booking.model.request.BookingRequest;
+import turing.edu.az.booking.model.response.BookingDto;
 import turing.edu.az.booking.services.BookingService;
 
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
+import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -26,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BookingControllerTest {
 
     private MockMvc mockMvc;
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     @Mock
     private BookingService bookingService;
@@ -39,14 +41,17 @@ class BookingControllerTest {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(bookingController)
                 .build();
+
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule()); // For LocalDateTime serialization
     }
 
     @Test
-    @DisplayName("GET /bookings → boş JSON array qaytarmalıdır")
+    @DisplayName("GET /api/v1/bookings → should return empty JSON array")
     void whenNoBookings_thenGetAllReturnsEmptyJsonArray() throws Exception {
-        given(bookingService.getAll()).willReturn(List.of());
+        given(bookingService.findAll()).willReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/bookings"))
+        mockMvc.perform(get("/api/v1/bookings"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isArray())
@@ -54,22 +59,63 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("POST /bookings → yaradılan obyektin JSON-u qaytarılmalı")
+    @DisplayName("GET /api/v1/bookings/{id} → should return booking by id")
+    void whenGetBookingById_thenReturnBooking() throws Exception {
+        BookingDto bookingDto = new BookingDto(1L, 1L, "John Doe", 2);
+
+        given(bookingService.findById(1L)).willReturn(bookingDto);
+
+        mockMvc.perform(get("/api/v1/bookings/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.flightId").value(1))
+                .andExpect(jsonPath("$.passengerName").value("John Doe"))
+                .andExpect(jsonPath("$.numberOfSeats").value(2));
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/bookings → should create and return the booking")
     void whenCreateBooking_thenReturnsCreatedBooking() throws Exception {
-        Booking in = new Booking();
-        in.setNumberOfSeats(3);
-        Booking out = new Booking();
-        out.setId(10L);
-        out.setNumberOfSeats(3);
+        BookingRequest request = new BookingRequest(1L, "John Doe", 2);
+        BookingDto createdBooking = new BookingDto(1L, 1L, "John Doe", 2);
 
-        given(bookingService.save(any(Booking.class))).willReturn(out);
+        given(bookingService.save(any(BookingRequest.class))).willReturn(createdBooking);
 
-        mockMvc.perform(post("/bookings")
+        mockMvc.perform(post("/api/v1/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(in)))
+                        .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(10L))
-                .andExpect(jsonPath("$.numberOfSeats").value(3));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.flightId").value(1))
+                .andExpect(jsonPath("$.passengerName").value("John Doe"))
+                .andExpect(jsonPath("$.numberOfSeats").value(2));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/bookings/flight/{flightId} → should return bookings by flight id")
+    void whenGetBookingsByFlightId_thenReturnBookings() throws Exception {
+        BookingDto bookingDto = new BookingDto(1L, 1L, "John Doe", 2);
+        List<BookingDto> bookings = List.of(bookingDto);
+
+        given(bookingService.getBookingsByFlightId(1L)).willReturn(bookings);
+
+        mockMvc.perform(get("/api/v1/bookings/flight/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].flightId").value(1))
+                .andExpect(jsonPath("$[0].passengerName").value("John Doe"))
+                .andExpect(jsonPath("$[0].numberOfSeats").value(2));
+    }
+
+    @Test
+    @DisplayName("DELETE /api/v1/bookings/{id} → should return no content")
+    void whenDeleteBooking_thenReturnNoContent() throws Exception {
+        mockMvc.perform(delete("/api/v1/bookings/1"))
+                .andExpect(status().isNoContent());
     }
 }
