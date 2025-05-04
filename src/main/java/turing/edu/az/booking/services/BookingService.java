@@ -1,22 +1,88 @@
 package turing.edu.az.booking.services;
 
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import turing.edu.az.booking.domain.entity.Booking;
+import turing.edu.az.booking.domain.entity.Flight;
+import turing.edu.az.booking.domain.entity.Passenger;
+import turing.edu.az.booking.domain.repository.BookingRepository;
+import turing.edu.az.booking.domain.repository.FlightRepository;
+import turing.edu.az.booking.exception.ResourceNotFoundException;
+import turing.edu.az.booking.mapper.BookingMapper;
+import turing.edu.az.booking.model.request.BookingRequest;
+import turing.edu.az.booking.model.response.BookingDto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Service
+@RequiredArgsConstructor
 public class BookingService {
-    public List<Booking> getAll() {
-        return null;
+    private final BookingRepository bookingRepository;
+    private final FlightRepository flightRepository;
+    private final FlightService flightService;
+    private final PassengerService passengerService;
+    private final BookingMapper bookingMapper;
+
+
+
+    public List<BookingDto> findAll(){
+        List<Booking> bookings = bookingRepository.findAll();
+
+        return bookings.stream()
+                .map(bookingMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public Booking getById(long l) {
-        return null;
+    public BookingDto findById(Long id){
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Booking not found with id " + id));
+        return bookingMapper.toDto(booking);
     }
 
-    public Booking save(Booking in) {
-        return null;
+    @Transactional
+    public void delete(Long id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
+
+        // Restore available seats
+        Flight flight = booking.getFlight();
+        flight.setAvailableSeats(flight.getAvailableSeats() + booking.getNumberOfSeats());
+        flightRepository.save(flight);
+
+        // Delete booking
+        bookingRepository.deleteById(id);
     }
 
-    public void delete(long l) {
+    @Transactional
+    public BookingDto save(BookingRequest bookingRequest){
+        Flight flight = flightRepository.findById(bookingRequest.getFlightId())
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found with id: " + bookingRequest.getFlightId()));
+
+        if (flight.getAvailableSeats() < bookingRequest.getNumberOfSeats()) {
+            throw new IllegalArgumentException("Not enough seats available on this flight");
+        }
+
+        Passenger passenger = passengerService.getOrCreatePassenger(bookingRequest.getPassengerName(), null);
+
+        Booking booking = new Booking();
+        booking.setFlight(flight);
+        booking.setPassenger(passenger);
+        booking.setNumberOfSeats(bookingRequest.getNumberOfSeats());
+
+        flightService.updateAvailableSeats(flight.getId(), bookingRequest.getNumberOfSeats());
+
+        booking = bookingRepository.save(booking);
+
+        return bookingMapper.toDto(booking);
     }
+
+    public List<BookingDto> getBookingsByFlightId(Long flightId) {
+        List<Booking> bookings = bookingRepository.findByFlightId(flightId);
+        return bookings.stream()
+                .map(bookingMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 }
