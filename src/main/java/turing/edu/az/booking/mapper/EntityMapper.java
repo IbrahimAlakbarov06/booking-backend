@@ -3,7 +3,7 @@ package turing.edu.az.booking.mapper;
 import java.util.List;
 
 
-public interface EntityMapper <E, D>{
+public interface EntityMapper <D, E>{
 
     E toEntity(D dto);
 

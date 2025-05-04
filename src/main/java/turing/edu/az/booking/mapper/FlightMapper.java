@@ -13,14 +13,14 @@ public interface FlightMapper extends EntityMapper<FlightDto, Flight> {
     FlightMapper INSTANCE = Mappers.getMapper(FlightMapper.class);
 
     @Override
-    FlightDto toEntity(Flight dto);
+    FlightDto toDto(Flight dto);
 
     @Override
-    List<FlightDto> toEntity(List<Flight> dtoList);
+    List<FlightDto> toDto(List<Flight> dtoList);
 
     @Override
-    Flight toDto(FlightDto entity);
+    Flight toEntity(FlightDto entity);
 
     @Override
-    List<Flight> toDto(List<FlightDto> entityList);
+    List<Flight> toEntity(List<FlightDto> entityList);
 }
