@@ -51,7 +51,7 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingDto save(BookingRequest bookingRequest){
+    public BookingDto save(BookingRequest bookingRequest) {
         Flight flight = flightRepository.findById(bookingRequest.getFlightId())
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found with id: " + bookingRequest.getFlightId()));
 
@@ -59,7 +59,7 @@ public class BookingService {
             throw new IllegalArgumentException("Not enough seats available on this flight");
         }
 
-        Passenger passenger = passengerService.getOrCreatePassenger(bookingRequest.getPassengerName(), null);
+        Passenger passenger = passengerService.findEntityById(bookingRequest.getPassengerId());
 
         Booking booking = new Booking();
         booking.setFlight(flight);
