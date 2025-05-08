@@ -2,6 +2,10 @@ version: '3.8'
 
 services:
   flight-booking-system:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: flight-booking-system:latest
     ports:
       - "8080:8080"
+

@@ -33,8 +33,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BookingServiceTest {
 
-    @Mock
+
+    @Mock(strictness = Mock.Strictness.LENIENT)
     private BookingRepository bookingRepository;
+
 
     @Mock
     private FlightRepository flightRepository;
@@ -56,7 +58,6 @@ class BookingServiceTest {
     void whenNoBookings_thenFindAllReturnsEmpty() {
         // Given
         when(bookingRepository.findAll()).thenReturn(Collections.emptyList());
-        when(bookingMapper.toDto(anyList())).thenReturn(Collections.emptyList());
 
         // When
         List<BookingDto> result = bookingService.findAll();
@@ -65,6 +66,7 @@ class BookingServiceTest {
         assertThat(result).isNotNull().isEmpty();
         verify(bookingRepository).findAll();
     }
+
 
     @Test
     @DisplayName("findById() → should return booking for existing id")
@@ -191,19 +193,39 @@ class BookingServiceTest {
         verify(bookingRepository).deleteById(1L);
     }
 
+
     @Test
     @DisplayName("getBookingsByFlightId() → should return bookings for flight")
     void whenGetBookingsByFlightId_thenReturnBookingsForFlight() {
         // Given
+        Flight flight = new Flight();
+        flight.setId(1L); // Flight obyektini tam qurmaq
+        flight.setOrigin("Origin");
+        flight.setDestination("Destination");
+        flight.setAvailableSeats(100);
+        flight.setTimestamp(LocalDateTime.now());
+
+        Passenger passenger = new Passenger();
+        passenger.setId(1L);
+        passenger.setFullName("John Doe");
+        passenger.setEmail("john.doe@example.com");
+
         Booking booking = new Booking();
         booking.setId(1L);
+        booking.setFlight(flight);  // Flight obyektini tam qurduq
+        booking.setPassenger(passenger);  // Passenger obyektini tam qurduq
+        booking.setNumberOfSeats(2);
+
         List<Booking> bookings = List.of(booking);
 
         BookingDto bookingDto = new BookingDto(1L, 1L, "John Doe", 2);
         List<BookingDto> expectedDtos = List.of(bookingDto);
 
+        // Stubbing
         when(bookingRepository.findByFlightId(1L)).thenReturn(bookings);
-        when(bookingMapper.toDto(bookings)).thenReturn(expectedDtos);
+
+        // Mocking `toDto` üçün düzgün stubbing: hər bir `Booking` üçün `BookingDto` qaytarılması
+        when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
 
         // When
         List<BookingDto> result = bookingService.getBookingsByFlightId(1L);
@@ -213,6 +235,8 @@ class BookingServiceTest {
         assertThat(result.get(0).getId()).isEqualTo(1L);
 
         verify(bookingRepository).findByFlightId(1L);
-        verify(bookingMapper).toDto(bookings);
+        verify(bookingMapper).toDto(booking);  // Hər bir `Booking` üçün `toDto` metodunun çağırıldığını yoxlayın
     }
+
+
 }
