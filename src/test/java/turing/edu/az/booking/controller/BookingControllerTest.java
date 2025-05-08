@@ -48,7 +48,7 @@ class BookingControllerTest {
                 .build();
 
         mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule()); // For LocalDateTime serialization
+        mapper.registerModule(new JavaTimeModule());
     }
 
     @Test
@@ -127,17 +127,14 @@ class BookingControllerTest {
     @Test
     @DisplayName("POST /api/v1/bookings → insufficient seats should return 400 with error message")
     void whenCreateBookingWithInvalidSeats_thenReturnBadRequest() throws Exception {
-        // BookingRequest'in `numberOfSeats`'i uçuşdakı mövcud yer sayısından çoxdur
         BookingRequest invalidRequest = new BookingRequest(1L, "John Doe", 10); // 10 yer istənir, lakin azdır
 
-        // Flight ID: 1 olan uçuşda mövcud yer sayı 5-dirsə
         Flight flight = new Flight();
         flight.setId(1L);
         flight.setAvailableSeats(5);
 
         given(flightRepository.findById(1L)).willReturn(Optional.of(flight));
 
-        // Flight'ın mövcud yerindən çox yer istəyirik
         mockMvc.perform(post("/api/v1/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(invalidRequest)))

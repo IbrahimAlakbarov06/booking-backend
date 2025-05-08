@@ -25,20 +25,17 @@ public class BookingService {
     private final PassengerService passengerService;
     private final BookingMapper bookingMapper;
 
-
-
     public List<BookingDto> findAll(){
         List<Booking> bookings = bookingRepository.findAll();
-
         return bookings.stream()
-                .map(bookingMapper::toDto)
+                .map(this::mapToBookingDto)
                 .collect(Collectors.toList());
     }
 
     public BookingDto findById(Long id){
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Booking not found with id " + id));
-        return bookingMapper.toDto(booking);
+        return mapToBookingDto(booking);
     }
 
     @Transactional
@@ -73,14 +70,23 @@ public class BookingService {
 
         booking = bookingRepository.save(booking);
 
-        return bookingMapper.toDto(booking);
+        return mapToBookingDto(booking);
     }
 
     public List<BookingDto> getBookingsByFlightId(Long flightId) {
         List<Booking> bookings = bookingRepository.findByFlightId(flightId);
         return bookings.stream()
-                .map(bookingMapper::toDto)
+                .map(this::mapToBookingDto)
                 .collect(Collectors.toList());
     }
 
+    private BookingDto mapToBookingDto(Booking booking) {
+        BookingDto dto = new BookingDto();
+        dto.setId(booking.getId());
+        dto.setFlightId(booking.getFlight().getId());
+        dto.setPassengerName(booking.getPassenger() != null ?
+                booking.getPassenger().getFullName() : null);
+        dto.setNumberOfSeats(booking.getNumberOfSeats());
+        return dto;
+    }
 }

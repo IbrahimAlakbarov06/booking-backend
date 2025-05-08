@@ -56,13 +56,10 @@ class BookingServiceTest {
     @Test
     @DisplayName("findAll() → should return empty list when no bookings")
     void whenNoBookings_thenFindAllReturnsEmpty() {
-        // Given
         when(bookingRepository.findAll()).thenReturn(Collections.emptyList());
 
-        // When
         List<BookingDto> result = bookingService.findAll();
 
-        // Then
         assertThat(result).isNotNull().isEmpty();
         verify(bookingRepository).findAll();
     }
@@ -71,7 +68,6 @@ class BookingServiceTest {
     @Test
     @DisplayName("findById() → should return booking for existing id")
     void whenBookingExists_thenFindByIdReturnsIt() {
-        // Given
         Booking booking = new Booking();
         booking.setId(1L);
         BookingDto bookingDto = new BookingDto(1L, 1L, "John Doe", 2);
@@ -79,10 +75,8 @@ class BookingServiceTest {
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
         when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
 
-        // When
         BookingDto found = bookingService.findById(1L);
 
-        // Then
         assertThat(found).isNotNull();
         assertThat(found.getId()).isEqualTo(1L);
         verify(bookingRepository).findById(1L);
@@ -92,10 +86,8 @@ class BookingServiceTest {
     @Test
     @DisplayName("findById() → should throw ResourceNotFoundException when booking not found")
     void whenBookingNotExists_thenThrowResourceNotFoundException() {
-        // Given
         when(bookingRepository.findById(99L)).thenReturn(Optional.empty());
 
-        // When/Then
         assertThatThrownBy(() -> bookingService.findById(99L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Booking not found");
@@ -106,7 +98,6 @@ class BookingServiceTest {
     @Test
     @DisplayName("save() → should create new booking and return it")
     void whenSave_thenReturnSavedBookingDto() {
-        // Given
         BookingRequest request = new BookingRequest(1L, "John Doe", 2);
 
         Flight flight = new Flight();
@@ -130,10 +121,8 @@ class BookingServiceTest {
         when(bookingRepository.save(any(Booking.class))).thenReturn(savedBooking);
         when(bookingMapper.toDto(savedBooking)).thenReturn(expectedDto);
 
-        // When
         BookingDto result = bookingService.save(request);
 
-        // Then
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getFlightId()).isEqualTo(1L);
@@ -150,16 +139,14 @@ class BookingServiceTest {
     @Test
     @DisplayName("save() → should throw exception when not enough seats")
     void whenNotEnoughSeats_thenThrowIllegalArgumentException() {
-        // Given
         BookingRequest request = new BookingRequest(1L, "John Doe", 10);
 
         Flight flight = new Flight();
         flight.setId(1L);
-        flight.setAvailableSeats(5); // Only 5 seats available
+        flight.setAvailableSeats(5);
 
         when(flightRepository.findById(1L)).thenReturn(Optional.of(flight));
 
-        // When/Then
         assertThatThrownBy(() -> bookingService.save(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Not enough seats available");
@@ -171,7 +158,6 @@ class BookingServiceTest {
     @Test
     @DisplayName("delete() → should increase flight available seats and delete booking")
     void whenDelete_thenIncreaseFlightSeatsAndDeleteBooking() {
-        // Given
         Flight flight = new Flight();
         flight.setId(1L);
         flight.setAvailableSeats(8);
@@ -183,10 +169,8 @@ class BookingServiceTest {
 
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
 
-        // When
         bookingService.delete(1L);
 
-        // Then
         assertThat(flight.getAvailableSeats()).isEqualTo(10); // 8 + 2 = 10
         verify(bookingRepository).findById(1L);
         verify(flightRepository).save(flight);
@@ -197,9 +181,8 @@ class BookingServiceTest {
     @Test
     @DisplayName("getBookingsByFlightId() → should return bookings for flight")
     void whenGetBookingsByFlightId_thenReturnBookingsForFlight() {
-        // Given
         Flight flight = new Flight();
-        flight.setId(1L); // Flight obyektini tam qurmaq
+        flight.setId(1L);
         flight.setOrigin("Origin");
         flight.setDestination("Destination");
         flight.setAvailableSeats(100);
@@ -212,8 +195,8 @@ class BookingServiceTest {
 
         Booking booking = new Booking();
         booking.setId(1L);
-        booking.setFlight(flight);  // Flight obyektini tam qurduq
-        booking.setPassenger(passenger);  // Passenger obyektini tam qurduq
+        booking.setFlight(flight);
+        booking.setPassenger(passenger);
         booking.setNumberOfSeats(2);
 
         List<Booking> bookings = List.of(booking);
@@ -221,22 +204,16 @@ class BookingServiceTest {
         BookingDto bookingDto = new BookingDto(1L, 1L, "John Doe", 2);
         List<BookingDto> expectedDtos = List.of(bookingDto);
 
-        // Stubbing
         when(bookingRepository.findByFlightId(1L)).thenReturn(bookings);
 
-        // Mocking `toDto` üçün düzgün stubbing: hər bir `Booking` üçün `BookingDto` qaytarılması
         when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
 
-        // When
         List<BookingDto> result = bookingService.getBookingsByFlightId(1L);
 
-        // Then
         assertThat(result).isNotNull().hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo(1L);
 
         verify(bookingRepository).findByFlightId(1L);
-        verify(bookingMapper).toDto(booking);  // Hər bir `Booking` üçün `toDto` metodunun çağırıldığını yoxlayın
+        verify(bookingMapper).toDto(booking);
     }
-
-
 }
