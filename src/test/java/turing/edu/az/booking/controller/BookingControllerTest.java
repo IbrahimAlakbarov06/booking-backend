@@ -12,12 +12,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import turing.edu.az.booking.domain.entity.Flight;
+import turing.edu.az.booking.domain.repository.FlightRepository;
+import turing.edu.az.booking.exception.ResourceNotFoundException;
 import turing.edu.az.booking.model.request.BookingRequest;
 import turing.edu.az.booking.model.response.BookingDto;
 import turing.edu.az.booking.services.BookingService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -29,7 +33,8 @@ class BookingControllerTest {
 
     private MockMvc mockMvc;
     private ObjectMapper mapper;
-
+    @Mock
+    private FlightRepository flightRepository;
     @Mock
     private BookingService bookingService;
 
@@ -117,5 +122,26 @@ class BookingControllerTest {
     void whenDeleteBooking_thenReturnNoContent() throws Exception {
         mockMvc.perform(delete("/api/v1/bookings/1"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/bookings → insufficient seats should return 400 with error message")
+    void whenCreateBookingWithInvalidSeats_thenReturnBadRequest() throws Exception {
+        // BookingRequest'in `numberOfSeats`'i uçuşdakı mövcud yer sayısından çoxdur
+        BookingRequest invalidRequest = new BookingRequest(1L, "John Doe", 10); // 10 yer istənir, lakin azdır
+
+        // Flight ID: 1 olan uçuşda mövcud yer sayı 5-dirsə
+        Flight flight = new Flight();
+        flight.setId(1L);
+        flight.setAvailableSeats(5);
+
+        given(flightRepository.findById(1L)).willReturn(Optional.of(flight));
+
+        // Flight'ın mövcud yerindən çox yer istəyirik
+        mockMvc.perform(post("/api/v1/bookings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Not enough seats available on this flight"));
     }
 }
