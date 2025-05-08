@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import turing.edu.az.booking.domain.entity.Passenger;
 import turing.edu.az.booking.domain.repository.PassengerRepository;
+import turing.edu.az.booking.exception.ResourceNotFoundException;
 import turing.edu.az.booking.mapper.PassengerMapper;
 import turing.edu.az.booking.model.request.PassengerRequest;
 import turing.edu.az.booking.model.response.PassengerDto;
@@ -43,6 +44,11 @@ public class PassengerService {
                         return passengerRepository.save(newPassenger);
                     });
         }
+    }
+    
+    public Passenger findEntityById(Long id) {
+        return passengerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Passenger not found with id: " + id));
     }
 
     public PassengerDto findById(Long id){
