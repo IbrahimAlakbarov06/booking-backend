@@ -8,6 +8,7 @@ import turing.edu.az.booking.domain.entity.Flight;
 import turing.edu.az.booking.domain.entity.Passenger;
 import turing.edu.az.booking.domain.repository.BookingRepository;
 import turing.edu.az.booking.domain.repository.FlightRepository;
+import turing.edu.az.booking.exception.BadRequestException;
 import turing.edu.az.booking.exception.ResourceNotFoundException;
 import turing.edu.az.booking.mapper.BookingMapper;
 import turing.edu.az.booking.model.request.BookingRequest;
@@ -25,16 +26,16 @@ public class BookingService {
     private final PassengerService passengerService;
     private final BookingMapper bookingMapper;
 
-    public List<BookingDto> findAll(){
+    public List<BookingDto> findAll() {
         List<Booking> bookings = bookingRepository.findAll();
         return bookings.stream()
                 .map(this::mapToBookingDto)
                 .collect(Collectors.toList());
     }
 
-    public BookingDto findById(Long id){
+    public BookingDto findById(Long id) {
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Booking not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + id));
         return mapToBookingDto(booking);
     }
 
@@ -56,7 +57,8 @@ public class BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found with id: " + bookingRequest.getFlightId()));
 
         if (flight.getAvailableSeats() < bookingRequest.getNumberOfSeats()) {
-            throw new IllegalArgumentException("Not enough seats available on this flight");
+            throw new BadRequestException("Not enough seats available on this flight");
+
         }
 
         Passenger passenger = passengerService.findEntityById(bookingRequest.getPassengerId());
@@ -70,7 +72,8 @@ public class BookingService {
 
         booking = bookingRepository.save(booking);
 
-        return mapToBookingDto(booking);
+        return bookingMapper.toDto(booking);
+
     }
 
     public List<BookingDto> getBookingsByFlightId(Long flightId) {
@@ -82,11 +85,15 @@ public class BookingService {
 
     private BookingDto mapToBookingDto(Booking booking) {
         BookingDto dto = new BookingDto();
-        dto.setId(booking.getId());
+        dto.setBookingId(booking.getId());
         dto.setFlightId(booking.getFlight().getId());
-        dto.setPassengerName(booking.getPassenger() != null ?
-                booking.getPassenger().getFullName() : null);
+        dto.setOrigin(booking.getFlight().getOrigin());
+        dto.setDestination(booking.getFlight().getDestination());
+        dto.setFlightDateTime(booking.getFlight().getTimestamp());
+        dto.setPassengerName(booking.getPassenger() != null ? booking.getPassenger().getFullName() : null);
+        dto.setPassengerEmail(booking.getPassenger() != null ? booking.getPassenger().getEmail() : null);
         dto.setNumberOfSeats(booking.getNumberOfSeats());
         return dto;
     }
+
 }

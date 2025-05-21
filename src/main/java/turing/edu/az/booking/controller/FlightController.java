@@ -24,6 +24,7 @@ public class FlightController {
         return new ResponseEntity<>(createdFlight, HttpStatus.CREATED);
     }
 
+
     @GetMapping
     public ResponseEntity<List<FlightDto>> getAllFlights() {
         List<FlightDto> flights = flightService.findAll();

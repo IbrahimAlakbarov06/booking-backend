@@ -18,7 +18,7 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name ="origin", nullable = false)
+    @Column(name = "origin", nullable = false)
     private String origin;
 
     @Column(name = "destination", nullable = false)
@@ -30,3 +30,4 @@ public class Flight {
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
 }
+

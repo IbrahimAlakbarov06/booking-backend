@@ -34,9 +34,8 @@ server:
 logging:
   level:
     root: INFO
-    com.flightbooking: DEBUG
-    org.springframework.web: INFO
-    org.hibernate: INFO
+    turing.edu.az.booking: DEBUG
+
 
 springdoc:
   api-docs:

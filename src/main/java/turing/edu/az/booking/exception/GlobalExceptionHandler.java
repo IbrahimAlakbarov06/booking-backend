@@ -75,4 +75,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Void> handleFaviconRequest(NoResourceFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, Object>> handleBadRequestException(BadRequestException ex) {
+        log.warn("Bad request: {}", ex.getMessage());
+
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now().toString());
+        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+        errorResponse.put("error", "Bad Request");
+        errorResponse.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
 }
