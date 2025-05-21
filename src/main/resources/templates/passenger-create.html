@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Passenger</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h2>➕ Create Passenger</h2>
+    <form id="passengerForm">
+        <label>Name: <input type="text" name="fullName" required></label><br>
+        <label>Email: <input type="email" name="email" required></label><br>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="passengerResult"></div>
+    <a class="btn" href="/">🏠 Home</a>
+</div>
+<script src="/js/script.js"></script>
+</body>
+</html>

@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Create Booking</title>
     <link rel="stylesheet" href="/css/style.css">
-    <script src="/js/booking.js" defer></script>
 </head>
 <body>
-<h2>➕ Create Booking</h2>
-<form id="bookingForm">
-    <label>Flight ID: <input type="number" name="flightId" required></label><br>
-    <label>Passenger ID: <input type="number" name="passengerId" required></label><br>
-    <label>Number of Seats: <input type="number" name="numberOfSeats" required min="1"></label><br>
-    <button type="submit">Submit</button>
-</form>
-<div id="result"></div>
-<a href="/">🏠 Back</a>
+<div class="container">
+    <h2>➕ Create Booking</h2>
+    <form id="bookingForm">
+        <label>Flight ID: <input type="number" name="flightId" required></label><br>
+        <label>Passenger ID: <input type="number" name="passengerId" required></label><br>
+        <label>Number of Seats: <input type="number" name="numberOfSeats" required min="1"></label><br>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="bookingResult"></div>
+    <a class="btn" href="/">🏠 Home</a>
+</div>
+<script src="/js/script.js"></script>
 </body>
 </html>

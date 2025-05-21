@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Flight</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h2>➕ Create Flight</h2>
+    <form id="flightForm">
+        <label>Origin: <input type="text" name="origin" required></label><br>
+        <label>Destination: <input type="text" name="destination" required></label><br>
+        <label>Available Seats: <input type="number" name="availableSeats" required min="1"></label><br>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="flightResult"></div>
+    <a class="btn" href="/">🏠 Home</a>
+</div>
+<script src="/js/script.js"></script>
+</body>
+</html>
