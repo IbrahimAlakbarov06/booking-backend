@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking List</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h2>📋 All Bookings</h2>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Passenger</th>
+        <th>Flight ID</th>
+        <th>Seats</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="booking : ${bookings}">
+        <td th:text="${booking.bookingId}">1</td>
+        <td th:text="${booking.passengerName}">John</td>
+        <td th:text="${booking.flightId}">101</td>
+        <td th:text="${booking.numberOfSeats}">2</td>
+    </tr>
+    </tbody>
+</table>
+<a href="/">🏠 Back to Home</a>
+</body>
+</html>

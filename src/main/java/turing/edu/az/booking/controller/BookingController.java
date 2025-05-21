@@ -24,6 +24,7 @@ public class BookingController {
         return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
     }
 
+
     @GetMapping
     public ResponseEntity<List<BookingDto>> getAllBookings() {
         List<BookingDto> bookings = bookingService.findAll();

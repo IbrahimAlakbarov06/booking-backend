@@ -8,4 +8,3 @@ services:
     image: flight-booking-system:latest
     ports:
       - "8080:8080"
-

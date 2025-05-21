@@ -12,10 +12,14 @@ public interface BookingMapper extends EntityMapper<BookingDto, Booking> {
 
     BookingMapper INSTANCE = Mappers.getMapper(BookingMapper.class);
 
-    @Override
     @Mapping(target = "flightId", source = "flight.id")
     @Mapping(target = "passengerName", source = "passenger.fullName")
+    @Mapping(target = "passengerEmail", source = "passenger.email")
+    @Mapping(target = "origin", source = "flight.origin")
+    @Mapping(target = "destination", source = "flight.destination")
+    @Mapping(target = "flightDateTime", source = "flight.timestamp")
     BookingDto toDto(Booking entity);
+
 
     @Override
     List<BookingDto> toDto(List<Booking> entityList);
