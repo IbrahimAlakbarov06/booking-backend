@@ -25,9 +25,4 @@ public class BookingDto {
         this.passengerName = passengerName;
         this.numberOfSeats = numberOfSeats;
     }
-
-    public Long getId() {
-        return this.bookingId; // eyni nəticə
-    }
-
 }
