@@ -1,6 +1,8 @@
 package turing.edu.az.booking.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,9 +55,9 @@ public class FlightController {
 
     @GetMapping("/search")
     public ResponseEntity<List<FlightDto>> searchFlights(
-            @RequestParam(required = false) String origin,
-            @RequestParam(required = false) String destination,
-            @RequestParam(required = false) Integer minSeats) {
+            @RequestParam(required = false) @NotBlank String origin,
+            @RequestParam(required = false) @NotBlank String destination,
+            @RequestParam(required = false) @NotNull Integer minSeats) {
         List<FlightDto> flights = flightService.searchFlights(origin, destination, minSeats);
         return ResponseEntity.ok(flights);
     }
